@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+    <style>
+        #mapa {
+            height: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mapa"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyziahr5GkCzjE5zuI83tbFmYXddxEzwo",
+            authDomain: "gps-tracker-a0d1a.firebaseapp.com",
+            databaseURL: "https://gps-tracker-a0d1a-default-rtdb.firebaseio.com",
+            projectId: "gps-tracker-a0d1a",
+            storageBucket: "gps-tracker-a0d1a.appspot.com",
+            messagingSenderId: "596136707805",
+            appId: "1:596136707805:web:89ade42b707414a5bcfd34"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const userRef = db.ref('users/12345')
+
+        var map, user;
+        userRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            console.log(map)
+
+            if (!map) {
+                map = L.map('mapa').setView([data.location.lat, data.location.lng], 15);
+                L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+                    maxZoom: 18
+                }).addTo(map);
+                user = L.marker([data.location.lat, data.location.lng]).addTo(map);
+            } else {
+                user.setLatLng([data.location.lat, data.location.lng])
+            }
+
+
+
+        })
+    </script>
+</body>
+
+</html>
